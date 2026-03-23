@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Coding Workflow** is a Claude Code plugin system providing AI-driven development workflows through 21 Skills, 36 Agents, and 47 Commands. It integrates multiple AI backends (Claude, Gemini, Codex) to automate development from requirements analysis to deployment.
+**Coding Workflow** is a Claude Code plugin system providing AI-driven development workflows through 18 Skills, 18 Agents, and 18 Commands. It integrates multiple AI backends and a Hive governance layer to coordinate planning, implementation, review, and documentation workflows.
 
 **Repository**: https://github.com/chaorenex1/coding-workflow
 
@@ -17,9 +17,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a **Claude Code Plugin** distributed via Plugin Marketplace. Key structure:
 
 - `.claude-plugin/plugin.json` - Plugin manifest defining all components
-- `skills/` - 21 auto-discovered skill modules (each with `SKILL.md`)
-- `agents/` - 36 specialized AI agents (organized in 5 subdirectories)
-- `commands/` - 47 slash commands (organized in 6 subdirectories)
+- `skills/` - 18 auto-discovered skill modules (each with `SKILL.md`)
+- `agents/` - 18 specialized AI agents
+- `commands/` - 18 slash commands across scaffold and workflow-suite
 - `hooks/hooks.json` - SessionStart hook for dependency validation
 
 ### Component Auto-Discovery
@@ -52,40 +52,40 @@ Dependencies are auto-checked on SessionStart via `hooks/hooks.json`. Check cach
 
 ## Development Workflows
 
-### BMAD (Breakthrough Method for Agile AI-Driven Development)
+### Core Workflow Suite
 
-**Full Workflow** (`/bmad`) - Complete project lifecycle:
-1. **Analysis** (`bmad-analyst`) - Market research, competitive analysis
-2. **Planning** (`bmad-product-owner`) - PRD creation, user stories
-3. **Architecture** (`bmad-architect`) - System design, API contracts
-4. **Development** (`bmad-scrum-master` → `bmad-fullstack-dev`) - TDD implementation
-5. **Testing** (`bmad-qa`) - Test execution, quality assurance
-6. **Deployment** (`bmad-devops`) - CI/CD, release management
+The current repository no longer uses the BMAD and quick-code workflow families. The supported workflows are centered on planning, TDD execution, review, analysis, and Hive orchestration.
 
-**Iteration Workflow** (`/bmad-iter`) - Change management for existing projects:
-1. **Diff Analysis** (`bmad-diff-analyst`) - Compare PRD versions
-2. **Planning** (`bmad-iteration-planner`) - Scope iteration
-3. **Impact Analysis** (`bmad-impact-analyst`) - Assess codebase changes
-4. **Development** (`bmad-iter-developer`) - Incremental implementation
-5. **Testing** (`bmad-regression-tester`) - Regression test suite
-6. **Release** (`bmad-release-manager`) - Changelog, deployment
+**Standard Plan -> Implement -> Review**
+1. `/coding-plan` - Generate a standard implementation plan
+2. `/tdd-coder` - Execute strict RED -> GREEN -> REFACTOR implementation
+3. `/quality-review` - Review the resulting changes
 
-### State Management
-BMAD workflows create `.bmad/` directory structure:
+**Multi-Backend Plan -> Implement -> Review**
+1. `/mult-coding-plan` - Generate a multi-backend implementation plan
+2. `/mult-tdd-coder` - Coordinate multi-backend TDD implementation
+3. `/quality-review` - Run the final review pass
+
+**Repository Analysis and Documentation**
+1. `/repo-analyst` - Generate repository-level macro analysis
+2. `/interface-analyst` - Generate interface/function-level micro analysis
+3. `/sync-docs` - Refresh documentation after changes
+
+### Hive Governance Workflow
+
+Hive adds an organizational coordination layer above the existing agents and commands.
+
+Key public artifacts:
 ```
-.bmad/
-├── config.yaml      # Project configuration
-├── state.yaml       # Current phase/status
-├── history/         # State transitions
-└── epics/           # Epic/story tracking
+.hive/
+├── members.yaml                        # Member registry
+└── templates/
+  └── team-lead-frontmatter.yaml      # Team lead template
 ```
 
-### Quick Code Workflows
-
-For small features/refactoring:
-- `/quick-feature` - Rapid feature implementation
-- `/quick-refactor` - Code refactoring analysis + execution
-- `/quick-rename` - Symbol renaming with impact analysis
+Primary entry points:
+- `/hive` - launch Hive orchestration
+- `/hive-status` - inspect current Hive status
 
 ---
 
@@ -121,7 +121,7 @@ EOF
 
 **New Agent**:
 ```bash
-cat > agents/automation/my-agent.md <<EOF
+cat > agents/my-agent.md <<EOF
 ---
 name: my-agent
 description: Agent role and when to invoke
@@ -167,20 +167,20 @@ git push origin main --tags
 
 ### Multi-Backend Orchestration
 
-Commands like `/multcode` orchestrate specialized skills for optimal AI backend usage:
-- **Claude**: Complex reasoning, architecture design (via `memex-cli`)
-- **Gemini**: UX design, multimodal tasks (via `ux-design-gemini` skill)
-- **Codex**: Code generation, refactoring (via `code-with-codex` skill)
+Commands like `/mult-coding-plan` and `/mult-tdd-coder` orchestrate specialized backends for planning and implementation:
+- **Claude**: orchestration, planning synthesis, and acceptance decisions
+- **Gemini**: UI and interaction-oriented execution paths
+- **Codex**: implementation-heavy code generation and refactoring paths
 
 Backend selection managed by orchestrator commands using `memex-cli` with `--backend` flag.
 
 ### Agent Coordination
 
-Orchestrator agents (e.g., `bmad-orchestrator`, `fa-orchestrator-quick-feature`) manage:
-- Phase transitions and validation
+Coordinator agents and commands manage:
+- Planning and implementation handoff
 - Specialized agent invocation via Task tool
-- State persistence in `.bmad/` or `.quick-code/`
-- Progress tracking and reporting
+- State persistence through `.hive/` and generated docs when applicable
+- Progress tracking and review reporting
 
 ### Skill Invocation
 
@@ -195,11 +195,12 @@ Skills are triggered two ways:
 ### Plugin Configuration
 - `.claude-plugin/plugin.json` - Plugin manifest (DO NOT modify component paths unless changing structure)
 - `hooks/hooks.json` - Event hooks (SessionStart dependency check)
-- `docs/coding-workflow.local.example.md` - User config template
+- `.hive/members.yaml` - Hive member registry
 
 ### Documentation
 - `README.md` - Public-facing documentation
-- `docs/PLUGIN_TESTING_GUIDE.md` - Plugin testing procedures
+- `docs/kb/hive-skill-design.md` - Hive design documentation
+- `docs/REPO/` - Repository-level generated architecture docs
 - Individual `SKILL.md` files - Skill-specific documentation
 
 ### Ignore Patterns
@@ -214,22 +215,24 @@ Skills are triggered two ways:
 
 | Scenario | Command | Use When |
 |----------|---------|----------|
-| Multi-backend workflow | `/multcode` | End-to-end development with Claude/Gemini/Codex orchestration |
-| New project from scratch | `/bmad` | Building complete application with git integration |
-| Existing project changes | `/bmad-iter` | PRD updates, feature additions |
-| Small feature (<200 LOC) | `/quick-feature` | Single-file or simple multi-file changes |
-| Code analysis | `/project-architecture`, `/code-review` | Understanding codebase structure |
-| Refactoring | `/quick-refactor` | Improving code quality |
-| Symbol rename | `/quick-rename` | Renaming across codebase |
+| Standard implementation planning | `/coding-plan` | Produce a single-backend implementation plan |
+| Multi-backend implementation planning | `/mult-coding-plan` | Plan work spanning Codex/Gemini style execution |
+| Standard TDD implementation | `/tdd-coder` | Execute strict test-first feature or fix work |
+| Multi-backend TDD implementation | `/mult-tdd-coder` | Coordinate test-first work across multiple backends |
+| Code review | `/quality-review` | Review current changes for quality and maintainability |
+| Repository macro analysis | `/repo-analyst` | Generate repository-level architecture docs |
+| Interface micro analysis | `/interface-analyst` | Analyze function and interface contracts |
+| Team orchestration | `/hive` | Run the Hive governance workflow |
+| Hive status tracking | `/hive-status` | Inspect current Hive orchestration state |
 
 ---
 
 ## Best Practices
 
 ### Before Making Changes
-1. Use `/project-architecture` to understand codebase structure
-2. Use `/code-impact-analysis` for change assessment
-3. Read relevant agent/skill documentation
+1. Use `/repo-analyst` or `/interface-analyst` to understand structure when needed
+2. Read relevant agent and skill documentation
+3. Prefer planning before implementation for non-trivial changes
 
 ### Adding Components
 1. Follow naming conventions (kebab-case)
@@ -238,10 +241,10 @@ Skills are triggered two ways:
 4. Test auto-discovery with `claude code --plugin-dir .`
 
 ### Plugin Testing
-Follow `docs/PLUGIN_TESTING_GUIDE.md`:
+Follow the local validation flow:
 1. Validate JSON manifests
 2. Test local plugin loading
-3. Verify component discovery (47 commands, 21 skills, 36 agents)
+3. Verify component discovery against the current repository state
 4. Check dependency validation hook
 
 ### Documentation Sync
@@ -260,9 +263,9 @@ When modifying code affecting architecture or user workflows:
 python -m json.tool .claude-plugin/plugin.json
 
 # Check directory structure
-ls -la skills/*/SKILL.md | wc -l  # Should be 21
-find agents -name "*.md" | wc -l  # Should be 36
-find commands -name "*.md" | wc -l # Should be 47
+ls -la skills/*/SKILL.md | wc -l
+find agents -name "*.md" | wc -l
+find commands -name "*.md" | wc -l
 ```
 
 ### Dependency Issues
@@ -285,7 +288,7 @@ python -c "import chardet, yaml; print('OK')"
 
 ## Version Management
 
-Current version: **3.0.0**
+Current version: **3.1.0**
 
 Semantic versioning (MAJOR.MINOR.PATCH):
 - MAJOR: Breaking changes to plugin structure or API
@@ -295,4 +298,4 @@ Semantic versioning (MAJOR.MINOR.PATCH):
 Update version in:
 1. `.claude-plugin/plugin.json`
 2. `README.md` badges
-3. Create git tag: `git tag -a v3.0.x -m "Release notes"`
+3. Create git tag: `git tag -a v3.1.x -m "Release notes"`
