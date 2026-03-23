@@ -1,0 +1,315 @@
+---
+description: Sequential and tmux/worktree orchestration guidance for multi-agent workflows.
+---
+
+# Orchestrate Command
+
+Sequential agent workflow for complex tasks.
+
+## Usage
+
+`/ow [workflow-type] [task-description]`
+
+## Workflow Types
+
+### feature
+Full feature implementation workflow:
+```
+analysis-planner -> tdd-coder -> quality-reviewer -> security-checker
+```
+
+### bugfix
+Bug investigation and fix workflow:
+```
+analysis-planner -> tdd-coder -> quality-reviewer
+```
+
+### refactor
+Safe refactoring workflow:
+```
+architect-designer -> quality-reviewer -> tdd-coder
+```
+
+### security
+Security-focused review:
+```
+security-checker -> quality-reviewer -> architect-designer
+```
+
+### cleanup
+Multi-language dead code cleanup workflow:
+```
+dead-code-cleaner -> quality-reviewer -> quality-reviewer
+```
+
+### review
+Comprehensive quality and security review (read-only, no code changes):
+```
+quality-reviewer -> security-checker
+```
+
+### docs
+Documentation synchronization after code changes:
+```
+documentation-sync-agent -> quality-reviewer
+```
+
+### multcode
+Multi-backend collaborative feature using Codex and Gemini:
+```
+mult-analysis-planner -> mult-tdd-coder -> quality-reviewer -> security-checker
+```
+
+### architecture
+Architecture design followed by plan persistence:
+```
+architect-designer -> analysis-planner -> plan-write
+```
+
+### analysis
+Macro and micro codebase analysis with architecture assessment:
+```
+repo-analyst -> interface-analyst -> architect-designer
+```
+Outputs: `docs/REPO/` + `./.claude/docs/micro/`
+
+### repo-analysis
+Repository-level macro documentation generation:
+```
+repo-analyst
+```
+Outputs: `docs/REPO/architecture.md`, `backend.md`, `frontend.md`, `data.md`, `dependencies.md`
+
+### interface-analysis
+Interface and function contract analysis:
+```
+interface-analyst
+```
+Outputs: `./.claude/docs/micro/` scoped analysis files
+
+### repo-sync
+Refresh existing repository analysis documents in place:
+```
+repo-analyst
+```
+Behavior: equivalent to `repo-analyst-sync`, focused on updating existing `docs/REPO/` files instead of creating parallel copies
+
+### plan
+Standard implementation planning with optional persistence:
+```
+analysis-planner -> plan-write (optional)
+```
+Outputs: planning summary in chat, optionally saved under `.claude/plan/`
+
+### mult-plan
+Multi-backend implementation planning with optional persistence:
+```
+mult-analysis-planner -> plan-write (optional)
+```
+Outputs: multi-backend planning summary in chat, optionally saved under `.claude/plan/`
+
+## Execution Pattern
+
+For each agent in the workflow:
+
+1. **Invoke agent** with context from previous agent
+2. **Collect output** as structured handoff document
+3. **Pass to next agent** in chain
+4. **Aggregate results** into final report
+
+## Handoff Document Format
+
+Between agents, create handoff document:
+
+```markdown
+## HANDOFF: [previous-agent] -> [next-agent]
+
+### Context
+[Summary of what was done]
+
+### Findings
+[Key discoveries or decisions]
+
+### Files Modified
+[List of files touched]
+
+### Open Questions
+[Unresolved items for next agent]
+
+### Recommendations
+[Suggested next steps]
+```
+
+## Example: Feature Workflow
+
+```
+/ow feature "Add user authentication"
+```
+
+Executes:
+
+1. **Analysis-Planner Agent**
+   - Analyzes requirements
+   - Creates implementation plan
+   - Identifies dependencies
+   - Output: `HANDOFF: analysis-planner -> tdd-coder`
+
+2. **TDD Coder Agent**
+   - Reads planner handoff
+   - Writes tests first
+   - Implements to pass tests
+   - Output: `HANDOFF: tdd-coder -> quality-reviewer`
+
+3. **Code Reviewer Agent**
+   - Reviews implementation
+   - Checks for issues
+   - Suggests improvements
+   - Output: `HANDOFF: quality-reviewer -> security-checker`
+
+4. **Security Checker Agent**
+   - Security audit
+   - Vulnerability check
+   - Final approval
+   - Output: Final Report
+
+## Final Report Format
+
+```
+ORCHESTRATION REPORT
+====================
+Workflow: feature
+Task: Add user authentication
+Agents: analysis-planner -> tdd-coder -> quality-reviewer -> security-checker
+
+SUMMARY
+-------
+[One paragraph summary]
+
+AGENT OUTPUTS
+-------------
+Analysis-Planner: [summary]
+TDD Coder: [summary]
+Code Reviewer: [summary]
+Security Checker: [summary]
+
+FILES CHANGED
+-------------
+[List all files modified]
+
+TEST RESULTS
+------------
+[Test pass/fail summary]
+
+SECURITY STATUS
+---------------
+[Security findings]
+
+RECOMMENDATION
+--------------
+[SHIP / NEEDS WORK / BLOCKED]
+```
+
+## Parallel Execution
+
+For independent checks, run agents in parallel:
+
+```markdown
+### Parallel Phase
+Run simultaneously:
+- quality-reviewer (quality)
+- security-checker (security)
+- architect-designer (design)
+
+### Merge Results
+Combine outputs into single report
+```
+
+For external tmux-pane workers with separate git worktrees, use `node scripts/orchestrate-worktrees.js plan.json --execute`. The built-in orchestration pattern stays in-process; the helper is for long-running or cross-harness sessions.
+
+When workers need to see dirty or untracked local files from the main checkout, add `seedPaths` to the plan file. ECC overlays only those selected paths into each worker worktree after `git worktree add`, which keeps the branch isolated while still exposing in-flight local scripts, plans, or docs.
+
+```json
+{
+  "sessionName": "workflow-e2e",
+  "seedPaths": [
+    "scripts/orchestrate-worktrees.js",
+    "scripts/lib/tmux-worktree-orchestrator.js",
+    ".claude/plan/workflow-e2e-test.json"
+  ],
+  "workers": [
+    { "name": "docs", "task": "Update orchestration docs." }
+  ]
+}
+```
+
+To export a control-plane snapshot for a live tmux/worktree session, run:
+
+```bash
+node scripts/orchestration-status.js .claude/plan/workflow-visual-proof.json
+```
+
+The snapshot includes session activity, tmux pane metadata, worker states, objectives, seeded overlays, and recent handoff summaries in JSON form.
+
+## Operator Command-Center Handoff
+
+When the workflow spans multiple sessions, worktrees, or tmux panes, append a control-plane block to the final handoff:
+
+```markdown
+CONTROL PLANE
+-------------
+Sessions:
+- active session ID or alias
+- branch + worktree path for each active worker
+- tmux pane or detached session name when applicable
+
+Diffs:
+- git status summary
+- git diff --stat for touched files
+- merge/conflict risk notes
+
+Approvals:
+- pending user approvals
+- blocked steps awaiting confirmation
+
+Telemetry:
+- last activity timestamp or idle signal
+- estimated token or cost drift
+- policy events raised by hooks or reviewers
+```
+
+This keeps planner, implementer, reviewer, and loop workers legible from the operator surface.
+
+## Arguments
+
+$ARGUMENTS:
+- `feature <description>` - Full feature workflow
+- `bugfix <description>` - Bug fix workflow
+- `refactor <description>` - Refactoring workflow
+- `security <description>` - Security review workflow
+- `cleanup <description>` - Multi-language dead code cleanup
+- `review <description>` - Comprehensive quality + security review (no changes)
+- `docs <description>` - Documentation sync after code changes
+- `multcode <description>` - Multi-backend collaborative feature (Codex + Gemini)
+- `architecture <description>` - Architecture design and plan persistence
+- `analysis <description>` - Macro + micro codebase analysis with architecture assessment
+- `repo-analysis <description>` - Generate repository-level docs under docs/REPO
+- `interface-analysis <description>` - Generate micro interface/function docs
+- `repo-sync <description>` - Refresh existing docs/REPO files in place
+- `plan <description>` - Standard implementation planning, optionally saved under .claude/plan
+- `mult-plan <description>` - Multi-backend implementation planning, optionally saved under .claude/plan
+- `mini-feature <description>` - Small feature quick delivery (≤200 LOC)
+- `custom <agents> <description>` - Custom agent sequence
+
+## Custom Workflow Example
+
+```
+/orchestrate custom "architect-designer,tdd-coder,quality-reviewer" "Redesign caching layer"
+```
+
+## Tips
+
+1. **Start with analysis-planner** for complex features
+2. **Always include quality-reviewer** before merge
+3. **Use security-checker** for auth/payment/PII
+4. **Keep handoffs concise** - focus on what next agent needs
+5. **Run verification** between agents if needed

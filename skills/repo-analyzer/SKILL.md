@@ -175,7 +175,7 @@ python repo_analyzer.py /path/to/repo --verbose true
 
 ## Related Skills
 
-- `code-reviewer` - For detailed code quality analysis
+- `quality-reviewer` - For detailed code quality analysis
 - `architecture-validator` - For architectural pattern validation
 - `dependency-auditor` - For security vulnerability scanning
 

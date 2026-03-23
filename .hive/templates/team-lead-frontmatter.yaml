@@ -1,0 +1,20 @@
+# Hive team lead frontmatter template.
+# Use this template for future hive-*-lead agents.
+---
+name: hive-{team}-lead
+description: >
+  {team} team lead for the Hive system. Orchestrates {team}-related agents,
+  enforces team boundaries, and reports to hive-ceo.
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Task
+model: sonnet
+role: team-lead
+team: {team}
+character_name: {persona}
+color: {color}
+field: {domain}
+expertise: expert
+---

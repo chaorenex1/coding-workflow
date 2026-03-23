@@ -44,8 +44,8 @@
     ],
     "agents": [
       {
-        "name": "code-reviewer",
-        "location": ".claude/agents/code-reviewer.md",
+        "name": "quality-reviewer",
+        "location": ".claude/agents/quality-reviewer.md",
         "tools": ["Read", "Grep", "Bash"]
       }
     ]

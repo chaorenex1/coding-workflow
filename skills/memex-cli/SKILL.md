@@ -13,8 +13,6 @@ memex-cli uses **stdin protocol** to define tasks, allowing:
 - Multi-backend AI execution (codex, claude, gemini)
 - Parallel and sequential task orchestration
 - Resume from previous runs with full context
-- File loading for context-aware tasks
-- Structured output (text or JSONL)
 
 ## Basic Task Syntax
 
@@ -24,8 +22,9 @@ memex-cli run --stdin <<'EOF'
 id: <task_id>
 backend: <backend>
 workdir: <working_directory>
+timeout: 3000000
 ---CONTENT---
-<prompt>
+<task content here>
 ---END---
 EOF
 ```
@@ -36,75 +35,114 @@ EOF
 |-----------|-------------|---------|
 | `id` | Unique task identifier | `implement-auth-20260110` |
 | `backend` | AI backend | `codex`, `claude`, `gemini` |
-| `workdir` | Working directory path | `./project` or `/home/user/app` |
-| `<prompt>` | Task prompt content | Describe what to implement |
+| `workdir` | Working directory path | `<working_directory>` or `/home/user/app` |
+| `<TASK_CONTENT>` | Step by step instructions for the task | `Implement authentication module` |
 
 ### Optional Parameters
 
-| Parameter | Description | Default | Example |
-|-----------|-------------|---------|---------|
-| `model` | Specific model name | Backend default | `gpt-5.2`, `gpt-5.1-codex-max` |
-| `model-provider` | Model provider | `openai` | For codex backend |
-| `dependencies` | Task dependencies | None | `task-a` or `task-a,task-b` |
-| `timeout` | Timeout in seconds | 300 | `600` (10 minutes) |
-| `retry` | Retry count on failure | 0 | `2` (retry twice) |
-| `files` | File paths to load | None | `src/**/*.py` (glob supported) |
-| `files-mode` | File handling mode | `embed` | `ref`, `auto` |
-| `files-encoding` | File encoding | `utf-8` | `base64`, `auto` |
-| `stream-format` | Output format | `text` | `jsonl` |
+| Parameter | Description  | Example |
+|-----------|-------------|---------|
+| `role_prompt` | Task role prompt path | `prompts/developer_role.md` |
+| `dependencies` | Task dependencies | `task-a` or `task-a,task-b` |
+| `timeout` | Timeout in seconds | `3000000`|
+| `files` | File Or Directory paths to load | `src/**/*.py` (glob supported) |
 
-## Backend Selection
 
-### Codex - Code Generation
+## Task Content Generate
 
-Optimized for code implementation and refactoring.
+Write task content as explicit, step-by-step instructions with clear outputs.
 
-```bash
----TASK---
-id: code-gen
-backend: codex
-workdir: ./project
-model: gpt-5.2
----CONTENT---
-实现用户认证模块
----END---
+### Recommended Structure
+
+1. Objective: What must be achieved.
+2. Scope: Which files, modules, or boundaries are included.
+3. Steps: Ordered implementation or analysis actions.
+4. Output: What artifacts or results must be returned.
+5. Validation: How to verify correctness.
+
+### Template
+
+```text
+Objective:
+- <target outcome>
+
+Scope:
+- <file/module boundaries>
+
+Steps:
+1. <step 1>
+2. <step 2>
+3. <step 3>
+
+Output:
+- <expected deliverable>
+
+Validation:
+- <verification criteria>
 ```
 
-**Best for:** Code generation, refactoring, test writing
+### Example: Single Task Content
 
-### Claude - Design & Architecture
+```text
+Objective:
+- Implement JWT authentication for login and protected routes.
 
-Optimized for system design and architecture planning.
+Scope:
+- src/auth/**
+- src/middleware/**
 
-```bash
----TASK---
-id: design
-backend: claude
-workdir: ./project
----CONTENT---
-设计 REST API 架构
----END---
+Steps:
+1. Add token generation and verification utilities.
+2. Add auth middleware for protected endpoints.
+3. Add input validation and error handling.
+
+Output:
+- Updated authentication module and middleware.
+- Brief summary of changed files and behavior.
+
+Validation:
+- Login returns a valid token.
+- Protected route rejects invalid or missing tokens.
 ```
 
-**Best for:** System design, architecture, documentation
+### Example: Multi-Task Content Split
 
-### Gemini - Multimodal Tasks
+Use focused task content per task when using multi-task execution:
 
-Supports image and document analysis.
+- Planning task: architecture and implementation plan only.
+- Implementation task: code changes only, based on approved plan.
+- Validation task: tests, review, and quality checks only.
 
-```bash
----TASK---
-id: ux-review
-backend: gemini
-workdir: ./project
-files: ./mockups/*.png
-files-mode: embed
----CONTENT---
-审查 UX 设计稿
----END---
-```
+### Quality Checklist
 
-**Best for:** UI/UX review, image analysis, multimodal tasks
+- Avoid vague verbs such as "improve" or "optimize" without measurable criteria.
+- Include explicit constraints (performance, compatibility, security) when required.
+- Keep each task content scoped so completion can be clearly verified.
+
+
+## Backend Selection Guide
+
+### Codex
+
+Specialized in deep code analysis, large-scale refactoring, and performance optimization.
+
+- **Deep Code Analysis & Understanding** — Analyze complex implementations with comprehensive understanding, navigate intricate dependencies, and identify architectural patterns in mixed-language codebases.
+- **Large-Scale Refactoring** — Execute precise refactoring across multiple files with accurate dependency tracking, ensuring no references are broken during structural transformations.
+- **Algorithm & Performance Optimization** — Identify performance bottlenecks, optimize algorithms, and provide detailed optimization strategies with measurable improvements.
+
+### Claude
+
+Specialized in fast feature delivery from clear requirements, technical documentation design, and professional prompt engineering.
+
+- **Quick Feature Implementation from Clear Requirements** — Quickly translate well-defined product or engineering requirements into practical implementation plans and deliver features efficiently.
+- **Technical Documentation Design & Writing** — Produce clear, professional technical documents such as API specifications, integration guides, architecture notes, and README files.
+- **Professional Prompt Engineering** — Craft high-quality prompts for product requirements, design specifications, workflow orchestration, and other structured AI-assisted development tasks.
+
+### Gemini
+
+- **UI Skeletons & Layout Prototyping** — Build clear UI skeletons and layout prototypes to quickly validate information architecture and page structure.
+- **Consistent Design System Implementation** — Implement interfaces with a consistent design language, including reusable components, spacing rules, and visual patterns.
+- **Interactive and Accessible Elements** — Create interactive, accessible UI elements with clear states, keyboard support, and usability-focused interactions.
 
 ## Task ID Patterns
 
@@ -128,51 +166,169 @@ auth.test
 
 Avoid generic IDs like `task1`, `task2`.
 
-## Multi-Task Execution
+## Role Prompt
 
-Define multiple tasks in one stdin input:
+Use `role_prompt` to attach a predefined role instruction file to a task.
+
+### When to Use
+
+- Enforce consistent behavior across repeated tasks.
+- Apply domain-specific expertise (for example, backend engineer, QA reviewer, or API architect).
+- Separate reusable role guidance from task-specific content.
+
+### Format
+
+- `role_prompt` should be a readable file path relative to `workdir`.
+- Keep role prompt files concise and focused on role behavior, constraints, and output style.
+
+### Example
 
 ```bash
 memex-cli run --stdin <<'EOF'
 ---TASK---
-id: task-1
+id: implement-auth-with-role
 backend: codex
-workdir: ./project
+workdir: <working_directory>
+role_prompt: prompts/developer_role.md
+timeout: 3000000
 ---CONTENT---
-First task
+Implement JWT-based authentication with input validation and tests.
+---END---
+EOF
+```
+
+### Best Practices
+
+- Reuse stable role prompt files instead of duplicating instructions in every task.
+- Keep task content focused on concrete goals; keep role behavior in `role_prompt`.
+- Version and review role prompt files like code to maintain quality.
+
+## File References
+
+Use `files` to load relevant context into a task. You can reference single files, directories, or glob patterns.
+
+### Common Reference Patterns
+
+- Single file: `files: ./README.md`
+- Directory: `files: ./docs/`
+- Glob pattern: `files: src/**/*.ts`
+- Multiple `files` entries: use commas to separate paths
+
+### Example
+
+```bash
+memex-cli run --stdin <<'EOF'
+---TASK---
+id: api-doc-review
+backend: claude
+workdir: <working_directory>
+timeout: 3000000
+files: ./README.md,./docs/api/*.md
+---CONTENT---
+Review API documentation consistency and suggest improvements.
+---END---
+EOF
+```
+
+## Multi-Task Execution
+
+Run multiple tasks in a single stdin payload. memex-cli automatically schedules tasks by dependency:
+
+- Tasks without `dependencies` run in parallel.
+- Tasks with `dependencies` run after their prerequisite tasks complete.
+
+### Example A: Parallel Execution
+
+Use this when tasks are independent and can run at the same time.
+
+```bash
+memex-cli run --stdin <<'EOF'
+---TASK---
+id: analyze-frontend
+backend: codex
+workdir: <working_directory>
+timeout: 3000000
+---CONTENT---
+Analyze the frontend module and list refactoring opportunities.
 ---END---
 
 ---TASK---
-id: task-2
-backend: codex
-workdir: ./project
+id: review-api-contract
+backend: claude
+workdir: <working_directory>
+timeout: 3000000
 ---CONTENT---
-Second task
+Review API contract consistency and propose improvements.
+---END---
+EOF
+```
+
+### Example B: DAG (Dependency-Aware) Execution
+
+Use this when later tasks depend on earlier outputs.
+
+```bash
+memex-cli run --stdin <<'EOF'
+---TASK---
+id: plan-feature
+backend: claude
+workdir: <working_directory>
+timeout: 3000000
+---CONTENT---
+Create an implementation plan for the notification feature.
+---END---
+
+---TASK---
+id: implement-feature
+backend: codex
+workdir: <working_directory>
+timeout: 3000000
+dependencies: plan-feature
+---CONTENT---
+Implement the feature based on the approved plan.
+---END---
+
+---TASK---
+id: validate-ui
+backend: gemini
+workdir: <working_directory>
+timeout: 3000000
+dependencies: implement-feature
+files: ./mockups/notification/*.png
+---CONTENT---
+Validate UI consistency and accessibility.
 ---END---
 EOF
 ```
 
 **Execution modes:**
-- **Parallel** (default) - Tasks without dependencies run simultaneously
-- **DAG** (sequential) - Tasks with `dependencies:` run in order
+- **Parallel (default)**: Independent tasks execute simultaneously for faster completion.
+- **DAG (dependency-aware)**: Tasks execute in dependency order when `dependencies` is set.
 
-See `references/advanced-usage.md` for detailed multi-task documentation.
+## Return Format
+
+```text
+CLI response text here...
+
+---
+RUN_ID: 019a7247-ac9d-71f3-89e2-a823dbd8fd14
+
+
+```
 
 ## Resume Functionality
 
 Continue from a previous run using `--run-id`:
 
 ```bash
-# Initial run outputs Run ID
-memex-cli run --stdin < task.md
-# Output: Run ID: abc123-def456
 
 # Resume from that run
-memex-cli resume --run-id abc123-def456 --stdin <<'EOF'
+memex-cli resume --run-id <run_id> --stdin <<'EOF'
 ---TASK---
 id: continue
 backend: codex
-workdir: ./project
+workdir: <working_directory>
+timeout: 3000000
 ---CONTENT---
 基于之前的实现添加功能
 ---END---
@@ -184,202 +340,79 @@ EOF
 - Conversation history maintained
 - File changes visible
 
-See `references/advanced-usage.md` for resume strategies.
+## Invocation Pattern
 
-## Output Formats
+### Single Task
 
-### Text Format (Default)
-
-Human-readable with status markers:
-
-```
-▶ task-id (backend/model)
-[AI output content]
-» 写入 file.py
-✓ task-id 3.5s
-```
-
-**Status markers:** `▶` (start), `✓` (success), `✗` (failed), `⟳` (retry), `»` (action)
-
-### JSONL Format
-
-Machine-readable JSON Lines for programmatic parsing:
+Use this pattern for one independent task.
 
 ```bash
-memex-cli run --stdin --stream-format jsonl < tasks.md
-```
-
-Output:
-```jsonl
-{"v":1,"type":"task.start","ts":"2026-01-10T10:00:00Z","run_id":"abc","task_id":"code-gen"}
-{"v":1,"type":"assistant.output","ts":"2026-01-10T10:00:01Z",...}
-{"v":1,"type":"task.end","ts":"2026-01-10T10:00:03Z",...}
-```
-
-See `references/output-formats.md` for complete format specifications.
-
-## Quick Start Examples
-
-**Single task:**
-```bash
-memex-cli run --stdin < examples/basic-task.md
-```
-
-**Parallel tasks:**
-```bash
-memex-cli run --stdin < examples/parallel-tasks.md
-```
-
-**DAG workflow:**
-```bash
-memex-cli run --stdin < examples/dag-workflow.md
-```
-
-All examples are in `examples/` directory with full task definitions.
-
-## Additional Resources
-
-### Reference Documentation
-
-For detailed information on advanced features:
-
-- **`references/output-formats.md`** - Complete output format specifications
-  - Text format status markers
-  - JSONL event types
-  - Parsing examples
-
-- **`references/advanced-usage.md`** - Advanced usage patterns
-  - Multi-task parallel execution
-  - DAG dependency configuration
-  - Resume strategies
-  - File loading modes
-  - Timeout and retry configuration
-
-- **`references/troubleshooting.md`** - Comprehensive troubleshooting guide
-  - Installation and authentication issues
-  - Task execution failures
-  - File loading problems
-  - Dependency and resume errors
-  - Performance optimization
-  - Advanced debugging techniques
-
-### Working Examples
-
-Ready-to-use task files in `examples/`:
-
-- **`examples/basic-task.md`** - Single task implementation
-- **`examples/parallel-tasks.md`** - Independent parallel tasks
-- **`examples/dag-workflow.md`** - Complete workflow with dependencies
-- **`examples/resume-workflow.md`** - Iterative development with resume
-
-Copy and customize these examples for your projects.
-
-## Common Workflows
-
-### Code Implementation
-
-```bash
-# Generate code with Codex
 memex-cli run --stdin <<'EOF'
 ---TASK---
-id: implement-feature
-backend: codex
-workdir: ./project
-model: gpt-5.2
+id: <single_task_id>
+backend: <codex|claude|gemini>
+workdir: <working_directory>
+timeout: 3000000
 ---CONTENT---
-实现用户认证模块
+<clear task instruction>
 ---END---
 EOF
 ```
 
-### Design Phase
+### Multi-Task
+
+Use this pattern when you need parallel or dependency-aware execution.
 
 ```bash
-# Design with Claude
 memex-cli run --stdin <<'EOF'
 ---TASK---
-id: design-system
-backend: claude
-workdir: ./project
+id: <task_a_id>
+backend: <codex|claude|gemini>
+workdir: <working_directory>
+timeout: 3000000
 ---CONTENT---
-设计系统架构
+<task A instruction>
+---END---
+
+---TASK---
+id: <task_b_id>
+backend: <codex|claude|gemini>
+workdir: <working_directory>
+timeout: 3000000
+dependencies: <task_a_id>
+---CONTENT---
+<task B instruction>
 ---END---
 EOF
 ```
 
-### UX Review
+### Session Resume
+
+Use this pattern to continue an existing run with preserved context.
 
 ```bash
-# Review mockups with Gemini
-memex-cli run --stdin <<'EOF'
+memex-cli resume --run-id <run_id> --stdin <<'EOF'
 ---TASK---
-id: review-ui
-backend: gemini
-workdir: ./project
-files: mockups/*.png
-files-mode: embed
+id: <continue_task_id>
+backend: <codex|claude|gemini>
+workdir: <working_directory>
+timeout: 3000000
 ---CONTENT---
-审查 UI 设计稿
+<follow-up instruction>
 ---END---
 EOF
 ```
 
-### Iterative Development
+## Critical Rules
 
-```bash
-# 1. Initial implementation
-RUN_ID=$(memex-cli run --stdin < task.md | grep "Run ID:" | awk '{print $3}')
+- Never kill any memex-cli process manually.
+- Always wait for TaskOutput and check task output before making decisions.
+- Always verify that memex-cli processes have not been killed.
 
-# 2. Add features
-memex-cli resume --run-id $RUN_ID --stdin < add-features.md
+## Security 
 
-# 3. Fix bugs
-memex-cli resume --run-id $RUN_ID --stdin < bugfixes.md
-```
+- Do not expose sensitive information in task instructions or outputs.
+- Ensure file paths and data references are secure and access-controlled.
+- Regularly review and update dependencies to mitigate vulnerabilities.
+- Task instructions should avoid including sensitive information such as passwords, API keys, personal data, or permission-related details.
 
-## Best Practices
-
-**Task ID naming:**
-- Use descriptive, semantic names
-- Include timestamps for uniqueness
-- Hierarchical naming for organization
-
-**Backend selection:**
-- Codex → Code generation
-- Claude → Design, architecture
-- Gemini → Multimodal, UI/UX
-
-**Dependency management:**
-- Keep DAG shallow (2-3 levels)
-- Parallelize independent tasks
-- Use resume for long workflows
-
-**File loading:**
-- Small files (<50 KB) → `files-mode: embed`
-- Large files (>50 KB) → `files-mode: ref`
-- Mixed sizes → `files-mode: auto`
-
-**Output format:**
-- Interactive use → `text` (default)
-- Automation → `jsonl` for parsing
-
-## Troubleshooting
-
-**Common issues:**
-
-- **"memex-cli command not found"** → Install: `npm install -g memex-cli`
-- **"Backend authentication failed"** → Check API keys configuration
-- **"File not found"** → Verify file paths relative to `workdir:`
-- **"Circular dependency"** → Restructure task dependencies (no cycles)
-- **"Context size exceeded"** → Use `files-mode: ref` or load fewer files
-
-## Summary
-
-memex-cli enables AI-powered development workflows with:
-- Multi-backend support (codex, claude, gemini)
-- Parallel and sequential task execution
-- Resume capability for iterative development
-- Flexible file loading with glob patterns
-- Structured output (text, JSONL)
-
-Start with `examples/basic-task.md`, then explore advanced patterns in `references/`.

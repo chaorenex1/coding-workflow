@@ -1,0 +1,114 @@
+version: 1
+updated: 2026-03-23
+
+# Hive static member registry.
+# Source of truth for current member-team mapping and persona names.
+members:
+  - agent_name: ai-workflow-architect
+    character_name: Nexus
+    path: agents/ai-workflow-architect.md
+    team: ceo-office
+    role: member
+    primary_skill: 工作流系统架构
+  - agent_name: analysis-planner
+    character_name: Chouri
+    path: agents/analysis-planner.md
+    team: analysis
+    role: member
+    primary_skill: 需求与实施规划
+  - agent_name: architect-designer
+    character_name: スカサハ
+    path: agents/architect-designer.md
+    team: architecture
+    role: member
+    primary_skill: 系统架构设计
+  - agent_name: code-reader-analyst
+    character_name: Code Pathfinder
+    path: agents/code-reader-analyst.md
+    team: analysis
+    role: member
+    primary_skill: 代码库理解与上下文提取
+  - agent_name: dead-code-cleaner
+    character_name: Lupa
+    path: agents/dead-code-cleaner.md
+    team: quality
+    role: member
+    primary_skill: 死代码清理与治理
+  - agent_name: documentation-sync-agent
+    character_name: Quill
+    path: agents/documentation-sync-agent.md
+    team: docs
+    role: member
+    primary_skill: 文档同步
+  - agent_name: interface-analyst
+    character_name: Micro Contract Cartographer
+    path: agents/interface-analyst.md
+    team: architecture
+    role: member
+    primary_skill: 接口契约与边界分析
+  - agent_name: kubernetes-expert
+    character_name: Helmsman
+    path: agents/kubernetes-expert.md
+    team: platform
+    role: member
+    primary_skill: 平台与 K8s 支持
+  - agent_name: mult-analysis-planner
+    character_name: フルールドリス
+    path: agents/mult-analysis-planner.md
+    team: analysis
+    role: member
+    primary_skill: 多后端分析规划
+  - agent_name: mult-coder
+    character_name: 調月リオ
+    path: agents/mult-coder.md
+    team: implementation
+    role: member
+    primary_skill: 多后端协同实现
+  - agent_name: mult-tdd-coder
+    character_name: 調月リオ
+    path: agents/mult-tdd-coder.md
+    team: implementation
+    role: member
+    primary_skill: 多后端 TDD 实现
+  - agent_name: plan-write
+    character_name: ザンニー
+    path: agents/plan-write.md
+    team: ceo-office
+    role: member
+    primary_skill: 计划持久化
+  - agent_name: prompt-style-analyzer
+    character_name: Mimicra
+    path: agents/prompt-style-analyzer.md
+    team: strategy
+    role: member
+    primary_skill: 提示词风格分析
+  - agent_name: quality-reviewer
+    character_name: カンタレラ
+    path: agents/quality-reviewer.md
+    team: quality
+    role: member
+    primary_skill: 质量审查
+  - agent_name: repo-analyst
+    character_name: repo-analyst
+    path: agents/repo-analyst.md
+    team: docs
+    role: member
+    primary_skill: 仓库宏观分析
+  - agent_name: rust-tauri-app-builder
+    character_name: Forge
+    path: agents/rust-tauri-app-builder.md
+    team: platform
+    role: member
+    primary_skill: 桌面脚手架与交付
+  - agent_name: security-checker
+    character_name: Yinlin
+    path: agents/security-checker.md
+    team: quality
+    role: member
+    primary_skill: 安全审查
+  - agent_name: tdd-coder
+    character_name: エイメス
+    path: agents/tdd-coder.md
+    team: implementation
+    role: member
+    primary_skill: TDD 实施

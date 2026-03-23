@@ -278,7 +278,7 @@ grep -r "ERROR" /var/log/*.log | wc -l
 **与代码审查技能组合**:
 ```
 @cross-platform-command-generator 生成部署脚本
-@code-reviewer 审查生成的脚本安全性
+@quality-reviewer 审查生成的脚本安全性
 ```
 
 **与文档生成技能组合**:
