@@ -94,26 +94,6 @@ def main():
         print(input_data, end="")
         return 0
 
-    # Check for code files
-    if is_code_file(file_path):
-        print(f"\u274c BLOCKED: Direct edit to code file detected!", file=sys.stderr)
-        print(f"\ud83d\udccb File: {file_path}", file=sys.stderr)
-        print(f"\u26a0\ufe0f  Violation: Rule #2 Workflow Contract", file=sys.stderr)
-        print(f"\u2705 Required: Use /code-with-codex skill instead", file=sys.stderr)
-        print(f"\nSuggested command:", file=sys.stderr)
-        print(f"  /code-with-codex [describe your code change]", file=sys.stderr)
-        return 1
-
-    # Check for UX files or content
-    if is_ux_file(file_path) or has_ux_content(content):
-        print(f"\u274c BLOCKED: Direct edit to UX/styling file detected!", file=sys.stderr)
-        print(f"\ud83d\udccb File: {file_path}", file=sys.stderr)
-        print(f"\u26a0\ufe0f  Violation: Rule #2 Workflow Contract", file=sys.stderr)
-        print(f"\u2705 Required: Use /ux-design-gemini skill instead", file=sys.stderr)
-        print(f"\nSuggested command:", file=sys.stderr)
-        print(f"  /ux-design-gemini [describe your design change]", file=sys.stderr)
-        return 1
-
     # Allow non-code/non-UX edits
     print(input_data, end="")
     return 0
