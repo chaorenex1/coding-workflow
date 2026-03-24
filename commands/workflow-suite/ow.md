@@ -100,14 +100,12 @@ Standard implementation planning with user-gated persistence:
 ```
 analysis-planner -> WAIT for user (yes/no/modify) -> [if yes] plan-write
 ```
-Outputs: planning summary in chat, saved under `.claude/plan/` only after explicit approval
 
 ### mult-plan
 Multi-backend implementation planning with user-gated persistence:
 ```
 mult-analysis-planner -> WAIT for user (yes/no/modify) -> [if yes] plan-write
 ```
-Outputs: multi-backend planning summary in chat, saved under `.claude/plan/` only after explicit approval
 
 ## Execution Pattern
 
