@@ -63,7 +63,7 @@ mult-analysis-planner -> mult-tdd-coder -> quality-reviewer -> security-checker
 ### architecture
 Architecture design followed by plan persistence:
 ```
-architect-designer -> analysis-planner -> plan-write
+architect-designer -> analysis-planner (waits for approval) -> user confirmation -> plan-write
 ```
 
 ### analysis
@@ -95,18 +95,18 @@ repo-analyst
 Behavior: equivalent to `repo-analyst-sync`, focused on updating existing `docs/REPO/` files instead of creating parallel copies
 
 ### plan
-Standard implementation planning with optional persistence:
+Standard implementation planning with user-gated persistence:
 ```
-analysis-planner -> plan-write (optional)
+analysis-planner -> WAIT for user (yes/no/modify) -> [if yes] plan-write
 ```
-Outputs: planning summary in chat, optionally saved under `.claude/plan/`
+Outputs: planning summary in chat, saved under `.claude/plan/` only after explicit approval
 
 ### mult-plan
-Multi-backend implementation planning with optional persistence:
+Multi-backend implementation planning with user-gated persistence:
 ```
-mult-analysis-planner -> plan-write (optional)
+mult-analysis-planner -> WAIT for user (yes/no/modify) -> [if yes] plan-write
 ```
-Outputs: multi-backend planning summary in chat, optionally saved under `.claude/plan/`
+Outputs: multi-backend planning summary in chat, saved under `.claude/plan/` only after explicit approval
 
 ## Execution Pattern
 
