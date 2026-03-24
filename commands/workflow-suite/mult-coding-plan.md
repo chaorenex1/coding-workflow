@@ -10,9 +10,11 @@ Create a multi-backend implementation plan and optionally save it as a plan file
 
 ## What This Command Does
 
-- Runs `mult-analysis-planner` to produce a multi-backend implementation plan.
-- Presents a structured plan summary with execution-ready phases.
-- Optionally persists the plan via `plan-write` under `.claude/plan/`.
+1. **Restate Requirements** - Clarify what needs to be built
+2. **Identify Risks** - Surface potential issues and blockers
+3. **Create Step Plan** - Break down implementation into phases
+4. **Wait for Confirmation** - MUST receive user approval before proceeding
+5. **Persist Plan** - Save the plan file if approved by the user
 
 ## When to Use
 
@@ -25,18 +27,13 @@ Use `/mult-coding-plan` when:
 
 The mult-analysis-planner and plan-write agents will:
 
-1. **Parse planning requirement** from `$ARGUMENTS`
-2. **Generate multi-backend plan** with backend/frontend perspectives
-3. **Present plan** for user confirmation
-4. **Ask save decision**: `是否保存成计划文件？(yes/no)`
-5. **If yes, persist plan** via `plan-write` into `.claude/plan/`
-6. **If no, return plan directly** in chat and stop
-
-## Output
-
-- Plan details
-- Save decision result
-- Plan file path (if saved)
+1. **Analyze the request** and restate requirements in clear terms
+2. **Break down into phases** with specific, actionable steps
+3. **Identify dependencies** between components
+4. **Assess risks** and potential blockers
+5. **Estimate complexity** (High/Medium/Low)
+6. **Present the plan** and WAIT for your explicit confirmation
+7. **Persist the plan** if approved by the user
 
 ## Example Usage
 
@@ -47,48 +44,10 @@ The mult-analysis-planner and plan-write agents will:
 ### Example Output
 
 ```markdown
-# Implementation Plan: Cross-Backend Command Telemetry
+${the `mult-analysis-planner` agent output here}
 
-## Overview
-Introduce telemetry collection in command execution and expose dashboard-friendly summaries.
-
-## Task Type
-- [x] Fullstack (parallel backend/frontend analysis)
-
-## Implementation Steps
-### Phase 1: Backend Event Instrumentation
-1. **Capture command execution events** (File: skills/memex-cli/bridge.py)
-
-### Phase 2: Frontend Contract and Visibility
-1. **Define dashboard query contract** (File: skills/component-tester/scripts/dashboard_state.ts)
-
-## Technical Solution
-Use backend event instrumentation with contract-tested schema mapping, then expose a stable UI query contract for dashboard aggregation.
-
-## Key Files
-| File | Operation | Description |
-|------|-----------|-------------|
-| skills/memex-cli/bridge.py | Modify | Emit and normalize telemetry events |
-| skills/component-tester/scripts/dashboard_state.ts | Modify | Consume telemetry summary contract |
-
-## Testing Strategy
-- Unit tests: telemetry event normalization and schema guards
-- Integration tests: end-to-end command event flow to storage/query boundary
-- E2E tests: dashboard state rendering for success/empty/error cases
-
-## Risks and Mitigation
-| Risk | Mitigation |
-|------|------------|
-| Schema drift | Versioned event schema and contract tests |
-
-## Success Criteria
-- [ ] Telemetry events emitted for all target command paths
-- [ ] Dashboard can display aggregated telemetry states reliably
-- [ ] Contract tests and regression checks pass
-
-## RUN_ID
-- CODEX_SESSION: run_codex_abc123
-- GEMINI_SESSION: run_gemini_def456
+## Confirmation
+**WAITING FOR CONFIRMATION**: Proceed with this plan? (yes/no/modify)
 
 ## Save Decision
 - User choice: yes

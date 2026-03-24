@@ -55,26 +55,7 @@ REPEAT:   Next feature/scenario
 ### Example Output
 
 ```markdown
-## Delivery Summary
-
-### Files Changed
-- skills/codex-cli-bridge/codex_executor.py
-- skills/codex-cli-bridge/test_skill.py
-
-### TDD Evidence
-- RED: Added failing test for retry-on-timeout path and verified failure.
-- GREEN: Implemented minimal retry logic to satisfy failing test.
-- REFACTOR: Simplified retry helper and kept behavior unchanged.
-
-### Test Status
-- Unit tests: PASS
-- Integration tests: PASS
-
-### Coverage Status
-- Overall coverage: 83% (meets >= 80% target)
-
-### Remaining Risks
-- Backoff policy tuning for very slow networks may require follow-up load tests.
+${the `tdd-coder` agent output here}
 ```
 
 ## Notes

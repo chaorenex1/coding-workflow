@@ -12,7 +12,6 @@ Run the `repo-analyst` agent to generate or refresh repository-level macro analy
 
 - Runs the `repo-analyst` agent to generate or refresh repository-level macro analysis docs.
 - Produces or updates the five canonical documents under `docs/REPO/`.
-- Returns a concise update summary for maintainers and reviewers.
 
 ## When to Use
 
@@ -33,7 +32,7 @@ The repo-analyst agent will:
    - `docs/REPO/frontend.md`
    - `docs/REPO/data.md`
    - `docs/REPO/dependencies.md`
-4. **Return update summary** with changed targets and key deltas
+4. **Return update details** with changed targets and key deltas
 
 ## Example Usage
 
@@ -44,16 +43,7 @@ The repo-analyst agent will:
 ### Example Output
 
 ```markdown
-Generated/updated documents under docs/REPO:
-- architecture.md
-- backend.md
-- frontend.md
-- data.md
-- dependencies.md
-
-Notes:
-- Diagrams kept in ASCII format.
-- Existing files refreshed in place.
+${the `repo-analyst` agent output here}
 ```
 
 ## Notes

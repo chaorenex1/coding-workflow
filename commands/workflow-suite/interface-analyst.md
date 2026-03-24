@@ -39,30 +39,7 @@ The interface-analyst agent will:
 ### Example Output
 
 ```markdown
-Project Type: Claude Code Plugin
-Primary Language(s): Markdown, Python
-Target Scope: commands/workflow-suite
-Micro Focus: interfaces/functions/call chains/errors
-Scale: 15 files, 60+ command-level symbols
-
-Generated/updated files:
-- .claude/docs/micro/commands-workflow-suite/micro-overview.md
-- .claude/docs/micro/commands-workflow-suite/interface-contracts.md
-- .claude/docs/micro/commands-workflow-suite/function-contracts.md
-- .claude/docs/micro/commands-workflow-suite/call-flows.md
-- .claude/docs/micro/commands-workflow-suite/dependency-touchpoints.md
-- .claude/docs/micro/commands-workflow-suite/patterns-and-risks.md
-- .claude/docs/micro/commands-workflow-suite/examples-and-recipes.md
-
-Top contract risks:
-- Medium: inconsistent argument contract across workflow commands (`$ARGUMENTS` semantics differ).
-- Medium: optional save flow lacks explicit failure branch when plan persistence fails.
-- Low: output section naming differs across commands, reducing downstream parser stability.
-
-Improvement items:
-- Standardize command input contract fields.
-- Add explicit failure response schema for persistence and delegated agent failures.
-- Normalize output headings across command files.
+${the `interface-analyst` agent output here}
 ```
 
 ## Notes

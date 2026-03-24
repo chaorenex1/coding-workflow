@@ -13,11 +13,7 @@ Run the `quality-reviewer` agent to review current changes for code quality, sec
 1. Use `$ARGUMENTS` as optional review scope, context, or change summary.
 2. Invoke agent: `quality-reviewer`.
 3. Review current staged and unstaged changes, or recent commits when no diff is available.
-4. Return a concise review report including:
-   - findings ordered by severity
-   - impacted files or areas
-   - fix guidance for confirmed issues
-   - final review verdict
+4. Return the `quality-reviewer` agent output.
 
 ## Notes
 

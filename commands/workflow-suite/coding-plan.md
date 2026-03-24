@@ -10,33 +10,32 @@ Create a standard implementation plan and optionally save it as a plan file.
 
 ## What This Command Does
 
-- Runs `analysis-planner` to generate a standard implementation plan.
-- Presents a structured plan summary for confirmation.
-- Optionally persists the plan via `plan-write` under `.claude/plan/`.
+1. **Restate Requirements** - Clarify what needs to be built
+2. **Identify Risks** - Surface potential issues and blockers
+3. **Create Step Plan** - Break down implementation into phases
+4. **Wait for Confirmation** - MUST receive user approval before proceeding
+5. **Persist Plan** - Save the plan file if approved by the user
 
 ## When to Use
 
 Use `/coding-plan` when:
-- You need a standard implementation plan before coding
-- The task does not require multi-backend planning orchestration
-- You want the plan saved and versioned for follow-up execution
+- Starting a new feature
+- Making significant architectural changes
+- Working on complex refactoring
+- Multiple files/components will be affected
+- Requirements are unclear or ambiguous
 
 ## How It Works
 
 The analysis-planner and plan-write agents will:
 
-1. **Parse planning input** from `$ARGUMENTS`
-2. **Generate standard plan** through `analysis-planner`
-3. **Present plan** to the user
-4. **Ask save decision**: `是否保存成计划文件？(yes/no)`
-5. **If yes, persist plan** via `plan-write` under `.claude/plan/`
-6. **If no, return plan directly** in chat and stop
-
-## Output
-
-- Plan details
-- Save decision result
-- Plan file path (if saved)
+1. **Analyze the request** and restate requirements in clear terms
+2. **Break down into phases** with specific, actionable steps
+3. **Identify dependencies** between components
+4. **Assess risks** and potential blockers
+5. **Estimate complexity** (High/Medium/Low)
+6. **Present the plan** and WAIT for your explicit confirmation
+7. **Persist the plan** if approved by the user
 
 ## Example Usage
 
@@ -47,60 +46,10 @@ The analysis-planner and plan-write agents will:
 ### Example Output
 
 ```markdown
-# Implementation Plan: Command-Level Telemetry Summary
+${The analysis-planner output here}
 
-## Overview
-Add telemetry summary support for workflow-suite command execution. Capture execution events and expose normalization for downstream analytics.
-
-## Requirements
-- Telemetry schema for command execution events
-- Event capture at command invocation boundaries
-- Normalization and contract validation
-- Storage/query interface for summary exposure
-
-## Architecture Changes
-- commands/workflow-suite/hooks/ — Add execution event hooks
-- skills/memex-cli/bridge.py — Telemetry event normalization
-- docs/REPO/dependencies.md — Update with telemetry collector reference
-
-## Implementation Steps
-
-### Phase 1: Schema and Hook Definition
-1. **Define telemetry event schema** (File: commands/workflow-suite/hooks/telemetry_schema.py)
-   - Action: Create event schema with command name, execution time, result status, error context
-   - Why: Enforces consistent event structure across all commands
-   - Dependencies: None
-   - Risk: Low
-
-2. **Add execution hooks** (File: commands/workflow-suite/hooks/hooks.json)
-   - Action: Register command execution event hooks
-   - Why: Captures execution events at command boundaries
-   - Dependencies: Step 1
-   - Risk: Low
-
-### Phase 2: Event Capture and Normalization
-1. **Implement normalization layer** (File: skills/memex-cli/bridge.py)
-   - Action: Add event normalization and validation function
-   - Why: Ensures telemetry quality and compatibility
-   - Dependencies: Phase 1
-   - Risk: Medium (may affect existing bridge execution)
-
-## Testing Strategy
-- Unit tests: schema validation and event normalization
-- Integration tests: command execution event flow with mocked telemetry collector
-- E2E tests: end-to-end telemetry capture for representative command patterns
-
-## Risks & Mitigations
-- **Risk**: Schema drift between event producers and consumers
-  - Mitigation: Versioned event schema and contract-driven tests
-- **Risk**: Incomplete command coverage
-  - Mitigation: Audit all existing commands for hook registration
-
-## Success Criteria
-- [x] Telemetry event schema defined and documented
-- [x] Hooks registered for all target commands
-- [x] Event normalization layer passes contract tests
-- [x] Integration test coverage >= 80%
+## Confirmation
+**WAITING FOR CONFIRMATION**: Proceed with this plan? (yes/no/modify)
 
 ## Save Decision
 - User choice: yes

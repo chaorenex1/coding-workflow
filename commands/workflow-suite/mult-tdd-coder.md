@@ -51,26 +51,7 @@ REPEAT:   Next feature/scenario
 ### Example Output
 
 ```markdown
-## TDD Execution Scope
-- Task Type: Fullstack
-- Source: saved plan
-- Plan References: [2.1, 2.2, 2.3, 2.4]
-- Primary Areas: [skills/memex-cli, skills/component-tester]
-- Required Tests: unit | integration
-- Coverage Target: >= 80%
-
-## TDD Task Breakdown
-| ID | Plan Ref | Type | Description | File Scope | Dependencies | Gate 1: RED (must fail) | Gate 2: GREEN (must pass) | Gate 3: REFACTOR (keep green) |
-|----|----------|------|-------------|------------|--------------|---------------------------|----------------------------|-------------------------------|
-| task-1 | 2.1 | code-test | telemetry ingestion tests + minimal parser | skills/memex-cli/** | None | pytest -k telemetry_ingest | pytest -k telemetry_ingest | pytest -k telemetry && ruff check |
-| task-2 | 2.3 | ui-test | dashboard state tests + minimal UI state wiring | skills/component-tester/** | task-1 | npm test -- dashboard_state | npm test -- dashboard_state | npm run lint && npm test |
-
-## Validation and Lineage
-- RED/GREEN/REFACTOR gates completed for listed tasks.
-- Coverage Status: 84% (meets >= 80% target)
-- CODEX_SESSION: run_codex_7f21
-- GEMINI_SESSION: run_gemini_91ac
-- Remaining Blockers: None
+${the `mult-tdd-coder` agent output here}
 ```
 
 ## Notes
