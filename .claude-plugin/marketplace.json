@@ -9,7 +9,7 @@
       "name": "coding-workflow",
       "source": "./",
       "description": "AI 智能工作流系统,提供从需求分析到代码实现的全自动化解决方案",
-      "version": "3.2.3",
+      "version": "3.2.4",
       "author": {
         "name": "chaorenex1",
         "url": "https://github.com/chaorenex1"
