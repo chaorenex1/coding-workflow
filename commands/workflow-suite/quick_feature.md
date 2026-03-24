@@ -1,7 +1,7 @@
 ---
 description: Quick feature implementation with analysis, user approval, implementation, testing, and code cleanup
 argument-hint: [feature-name|feature-description]
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task, TaskOutput, Skill
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task, TaskOutput, Skill, AskUserQuestion
 ---
 
 # Quick Feature Implementation
@@ -139,6 +139,8 @@ Proceed with implementation? (yes/no/modify)
 - `yes/是/确认` → Proceed to Phase 4
 - `no/否/取消` → Terminate workflow
 - `modify/修改` → Collect feedback, update analysis, re-preview
+
+Use `AskUserQuestion` to capture the decision and do not enter Phase 4 until decision is `yes/是/确认`.
 
 ---
 

@@ -1,3 +1,9 @@
+---
+description: Generate Electron scaffolding with an explicit interactive confirmation gate before initialization
+argument-hint: [OPTIONS]
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
+---
+
 # Electron Desktop App Scaffold Generator
 
 ## Usage
@@ -108,6 +114,14 @@ You are the **Electron Application Architect**, responsible for generating a com
 - ✅ 技术栈组合兼容
 - ✅ 安全配置符合最佳实践
 - ✅ 用户已确认配置
+
+### 阶段2.1：确认门（必须）
+
+进入阶段3前，必须通过 `AskUserQuestion` 询问：`是否按当前配置继续初始化？(yes/no/modify)`
+
+- `yes`：进入阶段3
+- `modify`：回到阶段2更新配置后再次确认
+- `no`：终止流程且不创建项目文件
 
 ---
 

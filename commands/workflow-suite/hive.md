@@ -54,12 +54,33 @@ Run the Hive command as the CEO-facing entry point for cross-team orchestration.
    - Quality Gate
    - Scope Gate
    - Conflict Gate
+   - Use `AskUserQuestion` to capture `yes`, `no`, or `modify` for each gate
 9. Persist outputs per wave and lane:
    - `.hive/reports/<team>/...`
    - `.hive/reports/waves/wave-<n>.md`
    - `.hive/summary.md`
    - `.hive/state.yaml` (final status)
 10. Return a concise CEO summary with completed waves, active parallel lanes, pending lanes, blockers, and recommended next action.
+
+## Decision Gate Protocol
+
+Apply this protocol at each gate before continuing to the next wave.
+
+1. **Gate Trigger**
+   - Plan Gate: before entering Wave 2
+   - Design Gate: before entering Wave 3
+   - Quality Gate: before entering Wave 5
+   - Scope Gate: when objective expands or DAG changes materially
+   - Conflict Gate: when lane outputs disagree or state is inconsistent
+2. **Gate Prompt**
+   - Present a short summary of current outputs and unresolved risks
+   - Ask user via `AskUserQuestion`: `Proceed? (yes/no/modify)`
+3. **Gate Branches**
+   - `yes`: persist gate decision in `.hive/state.yaml` and continue
+   - `modify`: collect constraints, update wave plan/state, re-run current gate
+   - `no`: stop orchestration and return a blocked summary
+4. **Hard Stop Rule**
+   - Do not start the next wave until the current gate resolves to `yes`
 
 ## Output Contract
 

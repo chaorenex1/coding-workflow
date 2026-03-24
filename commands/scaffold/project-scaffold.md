@@ -1,3 +1,9 @@
+---
+description: Generate project scaffolding with an explicit interactive confirmation gate before initialization
+argument-hint: <PROJECT_TYPE> [OPTIONS]
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
+---
+
 # Project Scaffold Generator
 
 ## Usage
@@ -73,6 +79,14 @@ Output a configuration summary and ask for confirmation.
 - ✅ All required info collected
 - ✅ Tech stack combination is compatible and reasonable
 - ✅ User has confirmed the configuration
+
+### Phase 1.1: Confirmation Gate
+
+Before entering Phase 2, ask via `AskUserQuestion`: `Proceed with this scaffold configuration? (yes/no/modify)`
+
+- `yes`: Continue to Phase 2
+- `modify`: Update configuration and repeat Phase 1 summary
+- `no`: Stop without creating files
 
 ---
 

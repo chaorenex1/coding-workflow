@@ -1,5 +1,6 @@
 ---
 description: Sequential and tmux/worktree orchestration guidance for multi-agent workflows.
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task, TaskOutput, Skill, AskUserQuestion
 ---
 
 # Orchestrate Command
@@ -114,8 +115,20 @@ For each agent in the workflow:
 
 1. **Invoke agent** with context from previous agent
 2. **Collect output** as structured handoff document
-3. **Pass to next agent** in chain
-4. **Aggregate results** into final report
+3. **Check for required approval gate** in the active workflow
+4. **If a gate exists, ask user** with `AskUserQuestion` using `yes/no/modify`
+5. **Pass to next agent** only when gate resolves to `yes`
+6. **Aggregate results** into final report
+
+## Approval Gate Rules
+
+Use explicit confirmation before running downstream persistence or execution steps:
+
+1. `architecture`: after `analysis-planner` output, require `yes/no/modify` before `plan-write`
+2. `plan`: after `analysis-planner` output, require `yes/no/modify` before `plan-write`
+3. `mult-plan`: after `mult-analysis-planner` output, require `yes/no/modify` before `plan-write`
+4. If user answers `modify`, update request and rerun current planning stage
+5. If user answers `no`, stop workflow and return current artifacts without advancing
 
 ## Handoff Document Format
 
